@@ -1,35 +1,67 @@
 var express = require('express'),
-    { checkSchema, validationResult } = require("express-validator"),
-    { error } = require("../helpers/error"),
+    path = require('path'),
     config = require('config'),
-    mathService = require("../services/math");
+    dbRepository = require('../db/scrapeMetatags'),
+    scrapeMetatags = require("../services/scrapeMetatags");
 
-var app = express();
+let app = express();
 
-
-app.get('/', checkSchema({
-    // id: {
-    //     in: ['body'],
-    //     errorMessage: 'ID is wrong',
-    //     isInt: true,
-    //     // Sanitizers can go here as well
-    //     toInt: true
-    // }
-}), function (req, res) {
-    validationResult(req).throw();
-    res.send('Hello Sir');
-});
-app.get('/add', function (req, res) {
-    return res.status((config.get('httpStatusCode.oK') && parseInt(config.get('httpStatusCode.oK')) || parseInt(config.get('httpStatusCode.oK'))))
-        .send({ result: mathService.add(10, 11) });
+app.get('/', async function (req, res) {
+    try {
+        res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
+    } catch (e) {
+        return res.status(500).send(e);
+    }
 });
 
-app.post('/hello', function (req, res) {
-    process.connection.query('INSERT INTO table1 SET ?', { name: 'Craig Buckler', city: 'Bangalore' }, (err, result) => {
-        if (err) new error();
-        console.log('Last insert ID:', result.insertId);
-        res.status(config.get('httpStatusCode.created')).send({ result })
-    });
+app.delete('/scrap', async function (req, res) {
+    try {
+        let resp = await dbRepository.deleteData();
+        return res.status((config.get('httpStatusCode.oK') && parseInt(config.get('httpStatusCode.oK')) || parseInt(config.get('httpStatusCode.oK'))))
+            .send(resp);
+    } catch (e) {
+        return res.status(500).send(e);
+    }
+});
+
+app.get('/db', async function (req, res) {
+    try {
+        let resp = await dbRepository.getData();
+        return res.status((config.get('httpStatusCode.oK') && parseInt(config.get('httpStatusCode.oK')) || parseInt(config.get('httpStatusCode.oK'))))
+            .send(resp);
+    } catch (e) {
+        return res.status(500).send(e);
+    }
+});
+
+app.get('/scrap', async function (req, res) {
+    try {
+        if (!req.query.url) {
+            return res.status(400).send({
+                msg: "a valid url is expected in url as the key in body"
+            });
+        }
+        let resp = await scrapeMetatags.scrap(req.query.url);
+        return res.status((config.get('httpStatusCode.oK') && parseInt(config.get('httpStatusCode.oK')) || parseInt(config.get('httpStatusCode.oK'))))
+            .send({ result: resp });
+    } catch (e) {
+        return res.status(500).send(e);
+    }
+});
+
+app.post('/scrap', async function (req, res) {
+    try {
+        if (!req.body || !req.body.data) {
+            return res.status(400).send({
+                msg: "a valid data is expected to save into DB"
+            });
+        }
+        await dbRepository.saveData('post.scrap', req.body.data);
+        return res.status((config.get('httpStatusCode.oK') && parseInt(config.get('httpStatusCode.oK')) || parseInt(config.get('httpStatusCode.oK'))))
+            .send("Data Saved");
+    } catch (e) {
+        return res.status(500).send(e);
+    }
 });
 
 module.exports = app;

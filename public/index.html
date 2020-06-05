@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Web Scrapper</title>
+    <script src="https://code.angularjs.org/1.6.9/angular.js"></script>
+    <script src="./app.js" type="text/javascript"></script>
+    <script src="./apiService.js" type="text/javascript"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
+    <!--load all styles -->
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
+    <div ng-app="app" ng-controller="appController">
+
+        Tutorial Name : <input type="text" ng-model="tutorialName" ng-model="data.result"><br>
+
+        <button type="button" class="btn btn-default" ng-click="get()">Get data from URL</button>
+        <button type="button" class="btn btn-default" ng-click="post()">Save data to DB</button>
+        <button type="button" class="btn btn-default" ng-click="getDB()">Get data from DB</button>
+        <button type="button" class="btn btn-default" ng-click="delete()">Flush DB data</button>
+        <!-- <button type="button" class="btn btn-default" ng-click="delete()">delete</button> -->
+        <br><br><br>
+        <h1>{{heading}}</h1>
+        <br>
+        <div ng-show="showLoader">
+            <img ng-src="./spinner-css3-animations.jpg">
+            <!-- or any other spinner -->
+        </div>
+        <table ng-if='tableCount'>
+            <tr>
+                <th>Url</th>
+                <th>caption</th>
+                <th>contentSize</th>
+                <th>lastModifiedDate</th>
+                <th>contentEncoding</th>
+                <th>server</th>
+            </tr>
+            <tbody style="border: 1px solid black">
+                <tr ng-repeat='item in dbResp'>
+                    <td ng-click="OpenTab(item.pickUrl)" class="pointer">{{item.pickUrl}}</td>
+                    <td>{{item.caption}}</td>
+                    <td>{{item.contentSize}}</td>
+                    <td>{{item.lastModifiedDate}}</td>
+                    <td>{{item.contentEncoding}}</td>
+                    <td>{{item.server}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    </div>
+</body>
+
+</html>
