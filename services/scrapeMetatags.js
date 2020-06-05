@@ -13,6 +13,9 @@ const scrap = async (text) => {
         uri: text,
         gzip: true
     });
+    if (res) throw {
+        msg: "No response recovered form the given url"
+    }
     const $ = cheerio.load(res);
     let linkDetails = [];
     let parallelArray = [];
@@ -29,9 +32,6 @@ const scrap = async (text) => {
                             uri: pickUrl,
                             method: "HEAD"
                         }, (err, response, body) => {
-                            if (err) {
-                                console.log(err)
-                            }
                             if (err) return callback(err, null);
                             if (response) {
                                 linkDetails.push({
