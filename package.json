@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/anurag8867/node_project_template#readme",
   "dependencies": {
-    "async": "^3.2.0",
+    "async": "^3.2.2",
     "body-parser": "^1.19.0",
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
